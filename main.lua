@@ -26,6 +26,8 @@ col3 = random(1,255)
 --infty threshold
 infty = 16
 
+help = true
+
 function love.load()
   width = love.window.getWidth()
   height = love.window.getHeight()
@@ -77,12 +79,12 @@ function calculateFrac()
           --bail
           continue = false
         end
-        n = n + 0.3
+        n = n + 1
       end
 
       -- We color each pixel based on how long it takes to get to infinity
       -- If we never got there, let's pick the color black
-      if n > maxiterations then 
+      if n == maxiterations then 
         pixels[i+j*width] = 0;
       else
         -- Gosh, we could make fancy colors here if we wanted
@@ -134,6 +136,15 @@ function love.keypressed(key)
     infty = infty - 1
     love.load()
   end
+
+  if key == "s" then
+    local screenshot = love.graphics.newScreenshot();
+    screenshot:encode(os.time() .. '.png');
+  end
+
+  if key == "h" then
+    help = not help
+  end
 end
 
 function love.mousepressed(x, y, key)
@@ -167,12 +178,20 @@ function love.draw()
 
   local x,y = lm.getPosition()
 
-  lg.print("xmin:" .. (((x/width)-0.5)*w)-0.25*w)
-  lg.print("ymin:" .. (((y/height)-0.5)*h)-0.25*h,0,20)
-  lg.print("col1:" .. col1, 0, 40)
-  lg.print("col2:" .. col2, 0, 60)
-  lg.print("col3:" .. col3, 0, 80)
-  lg.print("infinity threshold:" .. infty, 0, 100)
+  if help then
+    lg.print("xmin:" .. (((x/width)-0.5)*w)-0.25*w)
+    lg.print("ymin:" .. (((y/height)-0.5)*h)-0.25*h,0,20)
+    lg.print("Change colors with 'c'", 0, 40)
+    lg.print("col1:" .. col1, 0, 60)
+    lg.print("col2:" .. col2, 0, 80)
+    lg.print("col3:" .. col3, 0, 100)
+    lg.print("Change threshold with -/+" .. infty, 0, 120)
+    lg.print("infinity threshold:" .. infty, 0, 140)
+    lg.print("Save screenshot with 's'", 0, 160)
+    lg.print("Path will be something like: /home/lund/.local/share/love/frac/", 0, 180)
+    lg.print("Use to select zoom region", 0,200)
+    lg.print("Press 'h' to toggle help", 0,220)
+  end
 
   if mousestartx and mousestarty then
     lg.rectangle("line", mousestartx, mousestarty, x-mousestartx, y-mousestarty)
